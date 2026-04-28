@@ -10,7 +10,8 @@ export default function CultivoFormPage() {
 
   const [form, setForm] = useState({
     nombre: '', variedad: '', nombreLote: '', fechaSiembra: '', fechaCosechaEstimada: '',
-    estado: 'PLANIFICADO', areaUtilizada: '', observaciones: '', rendimientoEsperado: '', parcelaId: ''
+    estado: 'PLANIFICADO', areaUtilizada: '', observaciones: '', rendimientoEsperado: '', parcelaId: '',
+    imagenUrl: ''
   });
   const [fincas, setFincas] = useState([]);
   const [parcelas, setParcelas] = useState([]);
@@ -42,6 +43,7 @@ export default function CultivoFormPage() {
           fechaSiembra: c.fechaSiembra || '', fechaCosechaEstimada: c.fechaCosechaEstimada || '',
           estado: c.estado || 'PLANIFICADO', areaUtilizada: c.areaUtilizada || '',
           observaciones: c.observaciones || '', rendimientoEsperado: c.rendimientoEsperado || '',
+          imagenUrl: c.imagenUrl || '',
         });
         setSelectedFinca(c.fincaId || '');
         if (c.fincaId) loadParcelas(c.fincaId);
@@ -203,6 +205,16 @@ export default function CultivoFormPage() {
                 <input type="number" step="0.1" className="form-control" name="rendimientoEsperado"
                   placeholder="ton/ha" value={form.rendimientoEsperado} onChange={handleChange} />
               </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="form-label">URL de la Imagen del Cultivo (Opcional)</label>
+              <div className="input-group">
+                <span className="input-group-text"><i className="bi bi-camera"></i></span>
+                <input type="text" className="form-control" name="imagenUrl" placeholder="https://ejemplo.com/foto.jpg"
+                  value={form.imagenUrl} onChange={handleChange} />
+              </div>
+              <small className="text-muted">Puedes pegar el enlace de una foto de tu cultivo para tener un registro visual.</small>
             </div>
 
             <div className="mb-4">

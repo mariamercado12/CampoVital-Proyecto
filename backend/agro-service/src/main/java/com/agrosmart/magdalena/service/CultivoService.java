@@ -103,6 +103,7 @@ public class CultivoService {
                 .rendimientoEsperado(request.getRendimientoEsperado())
                 .unidadRendimiento(request.getUnidadRendimiento() != null
                         ? request.getUnidadRendimiento() : "toneladas/hectárea")
+                .imagenUrl(request.getImagenUrl())
                 .build();
 
         cultivo = cultivoRepository.save(cultivo);
@@ -131,6 +132,9 @@ public class CultivoService {
         cultivo.setRendimientoEsperado(request.getRendimientoEsperado());
         if (request.getUnidadRendimiento() != null) {
             cultivo.setUnidadRendimiento(request.getUnidadRendimiento());
+        }
+        if (request.getImagenUrl() != null) {
+            cultivo.setImagenUrl(request.getImagenUrl());
         }
         if (request.getEstado() != null) {
             try {
@@ -213,6 +217,7 @@ public class CultivoService {
                 .parcelaNombre(c.getParcela().getNombre())
                 .fincaId(c.getParcela().getFinca().getId())
                 .fincaNombre(c.getParcela().getFinca().getNombre())
+                .imagenUrl(c.getImagenUrl())
                 .build();
     }
 }

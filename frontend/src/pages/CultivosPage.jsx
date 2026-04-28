@@ -64,7 +64,12 @@ export default function CultivosPage() {
           <div className="row g-3">
             {[...pendingCultivos, ...cultivos].map((c) => (
               <div key={c.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card card-agro h-100" onClick={() => navigate(`/cultivos/${c.id}`)}>
+                <div className="card card-agro h-100 overflow-hidden" onClick={() => navigate(`/cultivos/${c.id}`)}>
+                  {c.imagenUrl && (
+                    <div className="card-img-top overflow-hidden" style={{ height: '140px' }}>
+                       <img src={c.imagenUrl} alt={c.nombre} className="w-100 h-100 object-fit-cover" />
+                    </div>
+                  )}
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-start mb-2">
                       <div>

@@ -71,9 +71,16 @@ export default function FincasPage() {
                       )}
                     </div>
                     <div className="d-flex flex-wrap gap-3 text-muted small mb-2">
-                      <span><i className="bi bi-rulers me-1"></i>{f.areaTotal} {f.unidadArea}</span>
+                      <span><i className="bi bi-rulers me-1"></i>{f.areaTotal} {f.unidadArea || 'ha'}</span>
                       <span><i className="bi bi-geo-alt me-1"></i>{f.municipio}</span>
-                      <span><i className="bi bi-grid me-1"></i>{f.cantidadParcelas} parcelas</span>
+                      <span><i className="bi bi-grid me-1"></i>{f.cantidadParcelas || 0} parcelas</span>
+                      {f.latitud && f.longitud && (
+                        <a href={`https://www.google.com/maps/search/?api=1&query=${f.latitud},${f.longitud}`} 
+                           target="_blank" rel="noreferrer" className="text-primary text-decoration-none"
+                           onClick={(e) => e.stopPropagation()}>
+                          <i className="bi bi-map me-1"></i>Ver Mapa
+                        </a>
+                      )}
                     </div>
                     {f.descripcion && <p className="text-muted small mb-0">{f.descripcion.substring(0, 80)}</p>}
                   </div>

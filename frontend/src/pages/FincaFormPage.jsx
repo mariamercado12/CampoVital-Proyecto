@@ -36,6 +36,31 @@ export default function FincaFormPage() {
     }
   }, [id]);
 
+  const obtenerUbicacionActual = () => {
+    if (!navigator.geolocation) {
+      setError('Tu navegador no soporta geolocalización');
+      return;
+    }
+
+    setSaving(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setForm(prev => ({
+          ...prev,
+          latitud: position.coords.latitude.toFixed(6),
+          longitud: position.coords.longitude.toFixed(6)
+        }));
+        setSaving(false);
+      },
+      (err) => {
+        console.error(err);
+        setError('No se pudo obtener la ubicación. Asegúrate de dar permisos de GPS.');
+        setSaving(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
@@ -126,17 +151,22 @@ export default function FincaFormPage() {
               </div>
             </div>
 
-            <hr className="my-4" />
-            <h5 className="mb-3 text-success"><i className="bi bi-geo-fill me-2"></i>Ubicación de la Finca (Opcional)</h5>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h5 className="mb-0 text-success"><i className="bi bi-geo-fill me-2"></i>Ubicación de la Finca</h5>
+              <button type="button" className="btn btn-sm btn-outline-primary" onClick={obtenerUbicacionActual}>
+                <i className="bi bi-crosshair me-1"></i>Capturar GPS
+              </button>
+            </div>
+            <p className="text-muted small mb-3">Puedes capturar tu ubicación actual con el botón superior o ingresar las coordenadas manualmente.</p>
             <div className="row mb-3">
               <div className="col-6">
                 <label className="form-label">Latitud</label>
-                <input type="number" step="0.0001" className="form-control" name="latitud" placeholder="Ej: 10.4195"
+                <input type="number" step="0.000001" className="form-control" name="latitud" placeholder="Ej: 10.4195"
                   value={form.latitud} onChange={handleChange} />
               </div>
               <div className="col-6">
                 <label className="form-label">Longitud</label>
-                <input type="number" step="0.0001" className="form-control" name="longitud" placeholder="Ej: -74.1502"
+                <input type="number" step="0.000001" className="form-control" name="longitud" placeholder="Ej: -74.1502"
                   value={form.longitud} onChange={handleChange} />
               </div>
             </div>

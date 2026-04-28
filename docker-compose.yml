@@ -1,0 +1,70 @@
+# ==============================================================================
+# AgroSmart Magdalena — Docker Compose
+# ==============================================================================
+# Plataforma Digital de Agricultura Inteligente para Pequeños Productores
+# Arquitectura: Monolito modular en capas (NO microservicios)
+#
+# Justificación de la decisión:
+#   - Bajo costo operativo para contextos rurales
+#   - Un solo artefacto desplegable (JAR + DB)
+#   - Mantenimiento simple para equipos pequeños
+#   - La escala esperada (~miles de usuarios) no justifica microservicios
+#   - Posibilidad de migración futura si la demanda crece
+# ==============================================================================
+
+version: '3.8'
+
+services:
+  # --------------------------------------------------------------------------
+  # PostgreSQL 16 — Base de datos principal
+  # --------------------------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: agrosmart-db
+    environment:
+      POSTGRES_DB: agrosmart_db
+      POSTGRES_USER: agrosmart
+      POSTGRES_PASSWORD: agrosmart2024
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrosmart -d agrosmart_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - agrosmart-net
+
+  # --------------------------------------------------------------------------
+  # Backend — Spring Boot (Java 21)
+  # --------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: agrosmart-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agrosmart_db
+      SPRING_DATASOURCE_USERNAME: agrosmart
+      SPRING_DATASOURCE_PASSWORD: agrosmart2024
+      JWT_SECRET: s3cr3tK3yAgr0Sm4rtM4gd4l3n4Pr0duct0r3s2024xYz!@#
+      JWT_EXPIRATION_MS: 86400000
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - agrosmart-net
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  agrosmart-net:
+    driver: bridge

@@ -54,3 +54,6 @@ CREATE DATABASE agrosmart;
 *   **Offline-First**: Caché automático de lecturas GET, encolamiento de operaciones transaccionales (CREATE/UPDATE) y sincronizador automático (`/sync`) implementado tanto en DB (`SincronizacionOfflineService`) como en navegador (`offlineService.js`).
 *   **Recomendaciones & Alertas Climatológicas**: *Event-Driven*: Al cambiar un cultivo de estado, `RecomendacionEngineService` genera reglas automáticas de nutrición. Exportador CSV del ecosistema vivo incorporado.
 *   **Exportación de Datos y Dashboard**: Endpoints de generación nativa CSV y agregación dinámica para Productores y Administradores.
+
+
+prueba commit

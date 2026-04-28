@@ -83,6 +83,9 @@ public class Cultivo extends BaseEntity {
     @Builder.Default
     private String unidadRendimiento = "toneladas/hectárea";
 
+    @Column(name = "imagen_url", length = 500)
+    private String imagenUrl;
+
     @OneToMany(mappedBy = "cultivo", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Recomendacion> recomendaciones = new ArrayList<>();

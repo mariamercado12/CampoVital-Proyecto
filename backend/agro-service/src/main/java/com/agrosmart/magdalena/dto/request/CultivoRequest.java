@@ -42,4 +42,6 @@ public class CultivoRequest {
 
     @Size(max = 30)
     private String unidadRendimiento;
+
+    private String imagenUrl;
 }

@@ -27,6 +27,7 @@ public class CultivoResponse {
     private String unidadRendimiento;
     private Boolean activo;
     private LocalDateTime createdAt;
+    private String imagenUrl;
 
     // Parcela
     private Long parcelaId;

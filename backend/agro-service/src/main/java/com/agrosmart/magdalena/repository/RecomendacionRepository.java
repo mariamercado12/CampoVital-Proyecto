@@ -18,5 +18,8 @@ public interface RecomendacionRepository extends JpaRepository<Recomendacion, Lo
     @Query("SELECT r FROM Recomendacion r WHERE r.cultivo.parcela.finca.productor.id = :productorId")
     Page<Recomendacion> findByProductorId(@Param("productorId") Long productorId, Pageable pageable);
 
+    @Query("SELECT r FROM Recomendacion r WHERE r.cultivo.parcela.finca.productor.usuarioId = :usuarioId")
+    Page<Recomendacion> findByUsuarioId(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
     Page<Recomendacion> findByAplicadaFalse(Pageable pageable);
 }

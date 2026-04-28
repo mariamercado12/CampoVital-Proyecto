@@ -46,8 +46,8 @@ public class RecomendacionService {
     }
 
     @Transactional(readOnly = true)
-    public Page<RecomendacionResponse> listarPorProductor(Long productorId, Pageable pageable) {
-        return recomendacionRepository.findByProductorId(productorId, pageable).map(this::toResponse);
+    public Page<RecomendacionResponse> listarPorProductor(Long usuarioId, Pageable pageable) {
+        return recomendacionRepository.findByUsuarioId(usuarioId, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)

@@ -32,14 +32,20 @@ public class DashboardService {
     public Map<String, Object> getProductorStats(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
             .orElseThrow(() -> new ResourceNotFoundException("Usuario", "email", email));
-        Long productorId = usuario.getId(); // En nuestra base simplificada, el ID usuario es la foreign key productor_id
+        Long usuarioId = usuario.getId();
 
         Map<String, Object> stats = new HashMap<>();
-        stats.put("totalFincas", fincaRepository.count()); // Usando datos globales (mock)
-        stats.put("cultivosActivos", cultivoRepository.count());
-        stats.put("recomendacionesPendientes", recomendacionRepository.count());
+        // Filtrar estadísticas por el usuarioId (productor)
+        stats.put("totalFincas", fincaRepository.findByProductorUsuarioId(usuarioId, org.springframework.data.domain.Pageable.unpaged()).getTotalElements());
+        stats.put("cultivosActivos", cultivoRepository.findByProductorUsuarioId(usuarioId, org.springframework.data.domain.Pageable.unpaged()).getTotalElements());
+        
+        // Contar recomendaciones pendientes por usuario
+        long pendientes = recomendacionRepository.findByUsuarioId(usuarioId, org.springframework.data.domain.Pageable.unpaged())
+                .getContent().stream().filter(r -> !r.getAplicada()).count();
+        stats.put("recomendacionesPendientes", pendientes);
+        
         stats.put("alertasActivas", alertaClimaticaRepository.count());
-        stats.put("syncPendientes", syncRepository.findByUsuarioIdAndEstado(productorId, EstadoSincronizacion.PENDIENTE).size());
+        stats.put("syncPendientes", syncRepository.findByUsuarioIdAndEstado(usuarioId, EstadoSincronizacion.PENDIENTE).size());
         
         return stats;
     }

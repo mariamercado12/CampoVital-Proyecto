@@ -29,5 +29,8 @@ public interface CultivoRepository extends JpaRepository<Cultivo, Long> {
     @Query("SELECT SUM(c.areaUtilizada) FROM Cultivo c WHERE c.parcela.id = :parcelaId AND c.activo = true")
     Double sumAreaUtilizadaByParcelaId(@Param("parcelaId") Long parcelaId);
 
+    @Query("SELECT c FROM Cultivo c WHERE c.parcela.finca.productor.usuarioId = :usuarioId AND c.activo = true")
+    Page<Cultivo> findByProductorUsuarioId(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
     Page<Cultivo> findByActivoTrue(Pageable pageable);
 }

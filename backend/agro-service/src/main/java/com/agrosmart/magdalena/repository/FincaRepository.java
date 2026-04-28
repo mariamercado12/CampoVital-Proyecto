@@ -22,5 +22,8 @@ public interface FincaRepository extends JpaRepository<Finca, Long> {
 
     Page<Finca> findByActivoTrue(Pageable pageable);
 
+    @Query("SELECT f FROM Finca f WHERE f.productor.usuarioId = :usuarioId AND f.activo = true")
+    Page<Finca> findByProductorUsuarioId(@Param("usuarioId") Long usuarioId, Pageable pageable);
+
     long countByProductorIdAndActivoTrue(Long productorId);
 }

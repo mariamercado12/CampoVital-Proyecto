@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { reporteService } from '../services/apiServices';
+import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner, EmptyState } from '../components/UIComponents';
 
 export default function ReportesPage() {
+  const { user } = useAuth();
   const [reportes, setReportes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -12,7 +14,7 @@ export default function ReportesPage() {
   const loadReportes = async () => {
     setLoading(true);
     try {
-      const res = await reporteService.listarPorProductor(1, 0);
+      const res = await reporteService.listarPorProductor(user?.usuarioId || 1, 0);
       setReportes(res.data?.datos?.content || []);
     } catch { setReportes([]); }
     finally { setLoading(false); }
@@ -21,7 +23,7 @@ export default function ReportesPage() {
   const generarReporte = async (tipo) => {
     setGenerating(true);
     try {
-      await reporteService.generar(1, { tipo, titulo: `Reporte de ${tipo.toLowerCase()}` });
+      await reporteService.generar(user?.usuarioId || 1, { tipo, titulo: `Reporte de ${tipo.toLowerCase()}` });
       loadReportes();
     } catch {}
     finally { setGenerating(false); }
@@ -40,8 +42,8 @@ export default function ReportesPage() {
           <div className="row g-2">
             <div className="col-12 col-md-4">
               <button className="btn btn-outline-success w-100 py-3 d-flex flex-column align-items-center"
-                onClick={async () => {
-                   const res = await reporteService.exportarProduccionCsv(1);
+               onClick={async () => {
+                   const res = await reporteService.exportarProduccionCsv(user?.usuarioId || 1);
                    const url = window.URL.createObjectURL(new Blob([res.data]));
                    const link = document.createElement('a');
                    link.href = url;

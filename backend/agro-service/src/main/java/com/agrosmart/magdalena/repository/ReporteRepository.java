@@ -12,6 +12,9 @@ public interface ReporteRepository extends JpaRepository<Reporte, Long> {
 
     Page<Reporte> findByProductorId(Long productorId, Pageable pageable);
 
+    @org.springframework.data.jpa.repository.Query("SELECT r FROM Reporte r WHERE r.productor.usuarioId = :usuarioId")
+    Page<Reporte> findByProductorUsuarioId(@org.springframework.data.repository.query.Param("usuarioId") Long usuarioId, Pageable pageable);
+
     Page<Reporte> findByTipo(TipoReporte tipo, Pageable pageable);
 
     Page<Reporte> findByProductorIdAndTipo(Long productorId, TipoReporte tipo, Pageable pageable);

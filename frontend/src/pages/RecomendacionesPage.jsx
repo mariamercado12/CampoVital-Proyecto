@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { recomendacionService } from '../services/apiServices';
+import { useAuth } from '../context/AuthContext';
 import { LoadingSpinner, EmptyState } from '../components/UIComponents';
 
 export default function RecomendacionesPage() {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -16,7 +18,7 @@ export default function RecomendacionesPage() {
     try {
       const res = tab === 'pendientes'
         ? await recomendacionService.listarPendientes(page)
-        : await recomendacionService.listarPorProductor(1, page);
+        : await recomendacionService.listarPorProductor(user?.usuarioId || 1, page);
       setItems(res.data?.datos?.content || []);
       setTotalPages(res.data?.datos?.totalPages || 0);
     } catch { setItems([]); }

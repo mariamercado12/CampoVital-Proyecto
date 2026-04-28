@@ -32,6 +32,21 @@ public class AgroSmartApplication {
             try {
                 jdbcTemplate.execute("ALTER TABLE ubicaciones_geograficas ALTER COLUMN latitud DROP NOT NULL");
                 jdbcTemplate.execute("ALTER TABLE ubicaciones_geograficas ALTER COLUMN longitud DROP NOT NULL");
+                System.out.println("Restricción NOT NULL eliminada de longitud exitosamente.");
+
+                // Insertar alertas climáticas de ejemplo si no existen
+                long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM alertas_climaticas", Long.class);
+                if (count == 0) {
+                    jdbcTemplate.execute("INSERT INTO alertas_climaticas (id, titulo, descripcion, tipo, fecha_emision, activa, estado, created_at, updated_at) " +
+                        "VALUES (101, 'Alerta de Sequía Prolongada', 'Se prevén bajas precipitaciones en la zona norte del departamento. Se recomienda optimizar el riego.', 'SEQUIA', NOW(), true, 'NUEVA', NOW(), NOW())");
+                    jdbcTemplate.execute("INSERT INTO alerta_municipios (alerta_id, municipio) VALUES (101, 'Santa Marta'), (101, 'Ciénaga'), (101, 'Zona Bananera')");
+                    
+                    jdbcTemplate.execute("INSERT INTO alertas_climaticas (id, titulo, descripcion, tipo, fecha_emision, activa, estado, created_at, updated_at) " +
+                        "VALUES (102, 'Riesgo de Inundación por Lluvias', 'Aumento en el nivel de los ríos del sur. Precaución en zonas bajas.', 'INUNDACION', NOW(), true, 'NUEVA', NOW(), NOW())");
+                    jdbcTemplate.execute("INSERT INTO alerta_municipios (alerta_id, municipio) VALUES (102, 'El Banco'), (102, 'Guamal')");
+                    
+                    System.out.println("Alertas climáticas de ejemplo insertadas.");
+                }
                 System.out.println("=== NOT NULL CONSTRAINTS SUCCESSFULLY REMOVED FROM DATABASE ===");
             } catch (Exception e) {
                 System.out.println("=== FAILED TO ALTER TABLE (MIGHT BE ALREADY DROPPED) ===");

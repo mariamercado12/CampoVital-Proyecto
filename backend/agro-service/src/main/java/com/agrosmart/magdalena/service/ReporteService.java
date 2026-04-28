@@ -36,8 +36,8 @@ public class ReporteService {
     private final AlertaClimaticaRepository alertaRepository;
 
     @Transactional(readOnly = true)
-    public Page<ReporteResponse> listarPorProductor(Long productorId, Pageable pageable) {
-        return reporteRepository.findByProductorId(productorId, pageable).map(this::toResponse);
+    public Page<ReporteResponse> listarPorProductor(Long usuarioId, Pageable pageable) {
+        return reporteRepository.findByProductorUsuarioId(usuarioId, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
@@ -52,9 +52,9 @@ public class ReporteService {
      * El contenido se genera automáticamente basado en las fincas y cultivos del productor.
      */
     @Transactional
-    public ReporteResponse generar(Long productorId, ReporteRequest request) {
-        Productor productor = productorRepository.findById(productorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Productor", "id", productorId));
+    public ReporteResponse generar(Long usuarioId, ReporteRequest request) {
+        Productor productor = productorRepository.findByUsuarioId(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Productor", "usuarioId", usuarioId));
 
         TipoReporte tipo;
         try {
@@ -64,7 +64,7 @@ public class ReporteService {
         }
 
         // Generar contenido del reporte
-        long totalFincas = fincaRepository.countByProductorIdAndActivoTrue(productorId);
+        long totalFincas = fincaRepository.findByProductorUsuarioId(usuarioId, Pageable.unpaged()).getTotalElements();
         String contenido = generarContenidoReporte(productor, tipo, totalFincas);
 
         Reporte reporte = Reporte.builder()
@@ -108,12 +108,12 @@ public class ReporteService {
     }
 
     @Transactional(readOnly = true)
-    public String generarCsvProduccion(Long productorId) {
+    public String generarCsvProduccion(Long usuarioId) {
         StringBuilder csv = new StringBuilder();
         csv.append("Productor,Cultivo,Area_Utilizada,Rendimiento_Estimado,Estado\n");
         // Simplified query logic for quick export
-        Iterable<Cultivo> cultivos = productorId != null 
-            ? cultivoRepository.findByProductorId(productorId, Pageable.unpaged()) 
+        Iterable<Cultivo> cultivos = usuarioId != null 
+            ? cultivoRepository.findByProductorUsuarioId(usuarioId, Pageable.unpaged()) 
             : cultivoRepository.findAll();
         for (Cultivo c : cultivos) {
             String prodNombre = "Agricultor ID: " + c.getParcela().getFinca().getProductor().getUsuarioId();

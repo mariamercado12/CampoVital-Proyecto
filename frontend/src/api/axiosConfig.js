@@ -1,16 +1,23 @@
 import axios from 'axios';
 import { offlineService } from '../services/offlineService';
 
-const API_BASE = '/api';
+// Auth en puerto 8081, Agro en puerto 8082 (Tomcat embebido)
+const AUTH_BASE = 'http://localhost:8081/api';
+const AGRO_BASE = 'http://localhost:8082/api';
 
 const api = axios.create({
-  baseURL: API_BASE,
-  headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
 });
 
 // Interceptor: agregar JWT a cada request
 api.interceptors.request.use((config) => {
+  // Asignar el base URL correcto según el endpoint
+  if (config.url.startsWith('/auth') || config.url.startsWith('auth')) {
+    config.baseURL = AUTH_BASE;
+  } else {
+    config.baseURL = AGRO_BASE;
+  }
+
   const token = localStorage.getItem('agrosmart_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;

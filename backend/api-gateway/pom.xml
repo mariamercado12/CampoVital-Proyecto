@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>api-gateway</artifactId>
+    <packaging>war</packaging>
     <name>API Gateway</name>
     <description>Pasarela de APIs para CampoVital</description>
 
@@ -27,6 +28,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -26,9 +26,11 @@ export default function RegisterPage() {
   return (
     <div className="login-container">
       <div className="login-card" style={{ maxWidth: 480 }}>
-        <div className="login-logo">🌱</div>
+        <div className="text-center mb-4">
+          <img src="/logo.png" alt="CampoVital" style={{ width: '120px' }} />
+        </div>
         <h1 className="login-title">Crear Cuenta</h1>
-        <p className="login-subtitle">Únase a AgroSmart Magdalena</p>
+        <p className="login-subtitle">Únete a la tecnología que echa raíces</p>
 
         {error && <div className="alert alert-danger py-2 small">{error}</div>}
 

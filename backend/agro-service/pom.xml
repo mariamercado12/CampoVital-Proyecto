@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>agro-service</artifactId>
+    <packaging>war</packaging>
     <name>Agro Service</name>
     <description>Microservicio de Fincas y Cultivos para CampoVital</description>
 
@@ -25,6 +26,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>

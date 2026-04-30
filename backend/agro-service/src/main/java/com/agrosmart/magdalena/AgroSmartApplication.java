@@ -3,6 +3,8 @@ package com.agrosmart.magdalena;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -20,7 +22,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
  *   - Posibilidad de evolución futura si la demanda crece
  */
 @SpringBootApplication
-public class AgroSmartApplication {
+public class AgroSmartApplication extends SpringBootServletInitializer {
+
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(AgroSmartApplication.class);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(AgroSmartApplication.class, args);
@@ -32,7 +39,9 @@ public class AgroSmartApplication {
             try {
                 jdbcTemplate.execute("ALTER TABLE ubicaciones_geograficas ALTER COLUMN latitud DROP NOT NULL");
                 jdbcTemplate.execute("ALTER TABLE ubicaciones_geograficas ALTER COLUMN longitud DROP NOT NULL");
-                System.out.println("Restricción NOT NULL eliminada de longitud exitosamente.");
+                jdbcTemplate.execute("ALTER TABLE cultivos ALTER COLUMN fecha_siembra DROP NOT NULL");
+                jdbcTemplate.execute("ALTER TABLE cultivos ALTER COLUMN imagen_url TYPE TEXT");
+                System.out.println("Restricción NOT NULL eliminada de fecha_siembra e imagen_url convertida a TEXT.");
 
                 // Insertar alertas climáticas de ejemplo si no existen
                 long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM alertas_climaticas", Long.class);

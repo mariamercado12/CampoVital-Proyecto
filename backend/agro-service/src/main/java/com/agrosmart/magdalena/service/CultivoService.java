@@ -45,8 +45,8 @@ public class CultivoService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CultivoResponse> listarPorProductor(Long productorId, Pageable pageable) {
-        return cultivoRepository.findByProductorId(productorId, pageable).map(this::toResponse);
+    public Page<CultivoResponse> listarPorProductor(Long usuarioId, Pageable pageable) {
+        return cultivoRepository.findByProductorUsuarioId(usuarioId, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +76,7 @@ public class CultivoService {
         }
 
         // Validar fechas
-        if (request.getFechaCosechaEstimada() != null
+        if (request.getFechaSiembra() != null && request.getFechaCosechaEstimada() != null
                 && request.getFechaSiembra().isAfter(request.getFechaCosechaEstimada())) {
             throw new BadRequestException("La fecha de siembra no puede ser posterior a la fecha estimada de cosecha");
         }
@@ -118,7 +118,8 @@ public class CultivoService {
             validarAreaDisponible(cultivo.getParcela().getId(), request.getAreaUtilizada(), id);
         }
 
-        if (request.getFechaCosechaEstimada() != null
+        if (request.getFechaSiembra() != null
+                && request.getFechaCosechaEstimada() != null
                 && request.getFechaSiembra().isAfter(request.getFechaCosechaEstimada())) {
             throw new BadRequestException("La fecha de siembra no puede ser posterior a la fecha estimada de cosecha");
         }

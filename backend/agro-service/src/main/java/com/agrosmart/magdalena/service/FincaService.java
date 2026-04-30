@@ -40,8 +40,8 @@ public class FincaService {
     }
 
     @Transactional(readOnly = true)
-    public Page<FincaResponse> listarPorProductor(Long productorId, Pageable pageable) {
-        return fincaRepository.findByProductorIdAndActivoTrue(productorId, pageable).map(this::toResponse);
+    public Page<FincaResponse> listarPorProductor(Long usuarioId, Pageable pageable) {
+        return fincaRepository.findByProductorUsuarioId(usuarioId, pageable).map(this::toResponse);
     }
 
     @Transactional(readOnly = true)
@@ -89,17 +89,6 @@ public class FincaService {
                 .build();
 
         finca = fincaRepository.save(finca);
-
-        // Auto-crear parcela por defecto
-        Parcela parcela = Parcela.builder()
-                .nombre("Lote Principal")
-                .finca(finca)
-                .areaParcela(finca.getAreaTotal())
-                .unidadArea(finca.getUnidadArea())
-                .descripcion("Parcela principal autogenerada")
-                .activo(true)
-                .build();
-        parcelaRepository.save(parcela);
 
         return toResponse(finca);
     }

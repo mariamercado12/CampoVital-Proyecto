@@ -1,70 +1,92 @@
-# ==============================================================================
-# AgroSmart Magdalena — Docker Compose
-# ==============================================================================
-# Plataforma Digital de Agricultura Inteligente para Pequeños Productores
-# Arquitectura: Monolito modular en capas (NO microservicios)
-#
-# Justificación de la decisión:
-#   - Bajo costo operativo para contextos rurales
-#   - Un solo artefacto desplegable (JAR + DB)
-#   - Mantenimiento simple para equipos pequeños
-#   - La escala esperada (~miles de usuarios) no justifica microservicios
-#   - Posibilidad de migración futura si la demanda crece
-# ==============================================================================
-
 version: '3.8'
 
 services:
-  # --------------------------------------------------------------------------
-  # PostgreSQL 16 — Base de datos principal
-  # --------------------------------------------------------------------------
-  postgres:
+  # Base de Datos (PostgreSQL)
+  postgres-db:
     image: postgres:16-alpine
-    container_name: agrosmart-db
+    container_name: agrosmart-postgres
     environment:
-      POSTGRES_DB: agrosmart_db
-      POSTGRES_USER: agrosmart
-      POSTGRES_PASSWORD: agrosmart2024
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./backend/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agrosmart -d agrosmart_db"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - agrosmart-net
+      - agrosmart-network
 
-  # --------------------------------------------------------------------------
-  # Backend — Spring Boot (Java 21)
-  # --------------------------------------------------------------------------
-  backend:
+  # Auth Service
+  auth-service:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: agrosmart-backend
+      context: ./backend/auth-service
+    container_name: auth-service
+    ports:
+      - "8081:8081"
     environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/agrosmart_db
-      SPRING_DATASOURCE_USERNAME: agrosmart
-      SPRING_DATASOURCE_PASSWORD: agrosmart2024
-      JWT_SECRET: s3cr3tK3yAgr0Sm4rtM4gd4l3n4Pr0duct0r3s2024xYz!@#
-      JWT_EXPIRATION_MS: 86400000
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/db_usuarios
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - APP_JWT_SECRET=s3cr3tK3yAgr0Sm4rtM4gd4l3n4Pr0duct0r3s2024xYz!@#
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - agrosmart-network
+
+  # Agro Service
+  agro-service:
+    build:
+      context: ./backend/agro-service
+    container_name: agro-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/db_agro
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - APP_JWT_SECRET=s3cr3tK3yAgr0Sm4rtM4gd4l3n4Pr0duct0r3s2024xYz!@#
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    networks:
+      - agrosmart-network
+
+  # API Gateway (Opcional, si se usa)
+  api-gateway:
+    build:
+      context: ./backend/api-gateway
+    container_name: api-gateway
     ports:
       - "8080:8080"
     depends_on:
-      postgres:
-        condition: service_healthy
+      - auth-service
+      - agro-service
     networks:
-      - agrosmart-net
+      - agrosmart-network
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+    container_name: agrosmart-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8080/api
+    depends_on:
+      - api-gateway
+    networks:
+      - agrosmart-network
 
 volumes:
   pgdata:
-    driver: local
 
 networks:
-  agrosmart-net:
+  agrosmart-network:
     driver: bridge

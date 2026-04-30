@@ -1,0 +1,4 @@
+CREATE DATABASE db_usuarios;
+CREATE DATABASE db_agro;
+GRANT ALL PRIVILEGES ON DATABASE db_usuarios TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE db_agro TO postgres;

@@ -15,7 +15,7 @@ export default function FincaFormPage() {
   const { user } = useAuth();
 
   const [form, setForm] = useState({
-    nombre: '', areaTotal: '', descripcion: '',
+    nombre: '', areaTotal: '', descripcion: '', unidadArea: 'hectáreas',
     latitud: '', longitud: '', vereda: '', municipio: '', referenciaAdicional: '',
   });
   const [loading, setLoading] = useState(isEdit);

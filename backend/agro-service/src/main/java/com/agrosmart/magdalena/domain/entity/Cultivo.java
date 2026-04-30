@@ -48,8 +48,7 @@ public class Cultivo extends BaseEntity {
     @JoinColumn(name = "parcela_id", nullable = false)
     private Parcela parcela;
 
-    @NotNull
-    @Column(name = "fecha_siembra", nullable = false)
+    @Column(name = "fecha_siembra")
     private LocalDate fechaSiembra;
 
     @Column(name = "fecha_cosecha_estimada")
@@ -83,7 +82,7 @@ public class Cultivo extends BaseEntity {
     @Builder.Default
     private String unidadRendimiento = "toneladas/hectárea";
 
-    @Column(name = "imagen_url", length = 500)
+    @Column(name = "imagen_url", columnDefinition = "TEXT")
     private String imagenUrl;
 
     @OneToMany(mappedBy = "cultivo", cascade = CascadeType.ALL, orphanRemoval = true)

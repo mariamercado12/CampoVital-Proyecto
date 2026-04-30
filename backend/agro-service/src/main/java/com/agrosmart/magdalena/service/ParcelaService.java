@@ -44,7 +44,7 @@ public class ParcelaService {
         Finca finca = fincaRepository.findById(request.getFincaId())
                 .orElseThrow(() -> new ResourceNotFoundException("Finca", "id", request.getFincaId()));
 
-        // Validar que el área de la parcela no exceda el área disponible de la finca
+        // Validación de área: asegurar que la parcela no exceda el área total de la finca
         validarAreaDisponible(finca, request.getAreaParcela(), null);
 
         Parcela parcela = Parcela.builder()

@@ -25,7 +25,6 @@ public class CultivoRequest {
     @NotNull(message = "El ID de parcela es obligatorio")
     private Long parcelaId;
 
-    @NotNull(message = "La fecha de siembra es obligatoria")
     private LocalDate fechaSiembra;
 
     private LocalDate fechaCosechaEstimada;

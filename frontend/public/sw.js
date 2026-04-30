@@ -28,26 +28,33 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch: Network-first para API, Cache-first para assets
+// Fetch: Estrategia diferenciada
 self.addEventListener('fetch', (event) => {
   const { request } = event;
+
+  // 1. Peticiones a la API
   if (request.url.includes('/api/')) {
-    // Network-first para llamadas al backend
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          if (response.ok) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-          }
-          return response;
-        })
-        .catch(() => caches.match(request))
-    );
-  } else {
-    // Cache-first para assets estáticos
-    event.respondWith(
-      caches.match(request).then((cached) => cached || fetch(request))
-    );
+    // IMPORTANTE: Solo interceptamos GET. Login/Registro (POST) van directo al servidor.
+    if (request.method === 'GET') {
+      event.respondWith(
+        fetch(request)
+          .then((response) => {
+            if (response.ok) {
+              const clone = response.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+            }
+            return response;
+          })
+          .catch(() => caches.match(request))
+      );
+    }
+    // Si no es GET (POST/PUT/DELETE), no hacemos nada y el navegador lo maneja normal
+    return;
   }
+
+  // 2. Assets estáticos (Cache-first)
+  event.respondWith(
+    caches.match(request).then((cached) => cached || fetch(request))
+  );
 });
+

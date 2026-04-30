@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { cultivoService } from '../services/apiServices';
 import { offlineService } from '../services/offlineService';
 import { LoadingSpinner, EmptyState, ConfirmModal } from '../components/UIComponents';
+import { useAuth } from '../context/AuthContext';
 
 const ESTADOS = {
   PLANIFICADO: { label: 'Planificado', class: 'planificado' },
@@ -21,6 +22,7 @@ export default function CultivosPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [deleteId, setDeleteId] = useState(null);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => { loadCultivos(); loadPending(); }, [page]);
 
@@ -34,7 +36,9 @@ export default function CultivosPage() {
   const loadCultivos = async () => {
     setLoading(true);
     try {
-      const res = await cultivoService.listar(page);
+      const uid = user?.usuarioId;
+      if (!uid) { setCultivos([]); setLoading(false); return; }
+      const res = await cultivoService.listarPorProductor(uid, page);
       setCultivos(res.data?.datos?.content || []);
       setTotalPages(res.data?.datos?.totalPages || 0);
     } catch { setCultivos([]); }
@@ -84,13 +88,21 @@ export default function CultivosPage() {
                         </span>
                       )}
                     </div>
-                    <div className="d-flex flex-wrap gap-2 text-muted small">
-                      <span><i className="bi bi-geo-alt me-1"></i>{c.fincaNombre}</span>
-                      <span><i className="bi bi-grid me-1"></i>{c.parcelaNombre}</span>
-                      {c.areaUtilizada && <span><i className="bi bi-rulers me-1"></i>{c.areaUtilizada} ha</span>}
-                    </div>
-                    <div className="text-muted small mt-2">
-                      <i className="bi bi-calendar me-1"></i>Siembra: {c.fechaSiembra}
+                    <div className="d-flex flex-column gap-1 small mt-2">
+                      <span className="text-success fw-semibold">
+                        <i className="bi bi-geo-alt-fill me-1"></i>
+                        Finca: {c.fincaNombre || '—'}
+                      </span>
+                      {c.parcelaNombre && (
+                        <span className="text-muted">
+                          <i className="bi bi-grid me-1"></i>
+                          Lote: {c.parcelaNombre}
+                        </span>
+                      )}
+                      <div className="d-flex flex-wrap gap-2 text-muted mt-1">
+                        {c.areaUtilizada && <span><i className="bi bi-rulers me-1"></i>{c.areaUtilizada} ha</span>}
+                        {c.fechaSiembra  && <span><i className="bi bi-calendar me-1"></i>Siembra: {c.fechaSiembra}</span>}
+                      </div>
                     </div>
                   </div>
                   <div className="card-footer bg-transparent border-0 d-flex gap-2 pt-0 pb-3 px-3">

@@ -19,6 +19,7 @@ import ReportesPage from './pages/ReportesPage';
 import SyncPage from './pages/SyncPage';
 import ParametrosPage from './pages/ParametrosPage';
 import PerfilPage from './pages/PerfilPage';
+import HomePage from './pages/HomePage';
 
 function Layout({ children }) {
   return (
@@ -38,8 +39,8 @@ export default function App() {
     <>
       <Routes>
         {/* Rutas públicas */}
-        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <LoginPage />} />
-        <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <RegisterPage />} />
+        <Route path="/login" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Layout><LoginPage /></Layout>} />
+        <Route path="/register" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Layout><RegisterPage /></Layout>} />
 
         {/* Rutas protegidas */}
         <Route path="/dashboard" element={<ProtectedRoute><Layout><DashboardPage /></Layout></ProtectedRoute>} />
@@ -65,7 +66,7 @@ export default function App() {
         <Route path="/parametros" element={<ProtectedRoute roles={['ADMIN']}><Layout><ParametrosPage /></Layout></ProtectedRoute>} />
 
         {/* Default */}
-        <Route path="/" element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} />} />
+        <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" /> : <Layout><HomePage /></Layout>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 

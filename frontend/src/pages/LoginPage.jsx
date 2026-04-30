@@ -25,9 +25,11 @@ export default function LoginPage() {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-logo">🌱</div>
-        <h1 className="login-title">AgroSmart Magdalena</h1>
-        <p className="login-subtitle">Plataforma de Agricultura Inteligente</p>
+        <div className="text-center mb-4">
+          <img src="/logo.png" alt="CampoVital" style={{ width: '120px' }} />
+        </div>
+        <h1 className="login-title">CampoVital</h1>
+        <p className="login-subtitle">Tecnología que echa raíces</p>
 
         {error && <div className="alert alert-danger py-2 small">{error}</div>}
 
